@@ -1,0 +1,28 @@
+// コンテナ上のVSCodeの設定
+{
+    // VSCode上で表示される名前
+    "name": "langchain-rag",
+    // docker-composeファイルのパス
+    "dockerComposeFile": "../docker-compose.yaml",
+    // docker-composeのサービス
+    "service": "rag_app",
+    // VSCodeのルートディレクトリ
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "GitHub.copilot-chat",
+                "charliermarsh.ruff",
+                "codezombiech.gitignore",
+                "GitHub.copilot",
+                "saoudrizwan.claude-dev",
+                "njpwerner.autodocstring",
+                "ms-python.mypy-type-checker",
+                "analytic-signal.preview-pdf"
+            ]
+        }
+    },
+    // VSCodeの設定等
+    
+  }
+  

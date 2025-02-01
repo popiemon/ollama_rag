@@ -1,0 +1,12 @@
+services:
+  rag_app:
+    build: .
+    stdin_open: true
+    tty: true
+    container_name: langchain-rag
+    volumes:
+      - ./:/workspace
+    environment:
+      - OLLAMA_SERVER=http://host.docker.internal:11434
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
