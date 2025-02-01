@@ -20,9 +20,7 @@ ENV PATH="/root/.local/bin/:$PATH"
 ENV UV_PROJECT_ENVIRONMENT="/usr/local/"
 
 # パッケージのインストール
-COPY pyproject.toml uv.lock README.md /tmp/
-WORKDIR /tmp
+COPY pyproject.toml uv.lock README.md /workspace/
+WORKDIR /workspace
 RUN uv sync --all-extras
 
-# 作業ディレクトリの設定
-WORKDIR /workspace
