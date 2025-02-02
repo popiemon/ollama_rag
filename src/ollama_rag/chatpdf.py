@@ -1,3 +1,4 @@
+import chromadb
 from langchain.prompts import PromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough
@@ -10,9 +11,10 @@ from langchain_ollama import ChatOllama
 
 
 class ChatPDF:
-    def __init__(self):
+    def __init__(self, model: str, base_url: str, persist_directory: str) -> None:
         self.model = ChatOllama(
-            model="phi4", base_url="http://host.docker.internal:11434"
+            model=model,
+            base_url=base_url,
         )
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1024, chunk_overlap=100
@@ -27,16 +29,14 @@ class ChatPDF:
             """
         )
 
-    def ingest(self, pdf_file_path: str):
-        docs = PyPDFLoader(file_path=pdf_file_path).load()
-        chunks = self.text_splitter.split_documents(docs)
-        chunks = filter_complex_metadata(chunks)
-        self.vector_store = Chroma.from_documents(
-            documents=chunks,
-            embedding=FastEmbedEmbeddings(),
-            persist_directory="/workspace/db",
+        persist_directory = persist_directory
+        client = chromadb.PersistentClient(path=persist_directory)
+        self.db = Chroma(
+            collection_name="pdfs",
+            embedding_function=FastEmbedEmbeddings(),
+            client=client,
         )
-        self.retriever = self.vector_store.as_retriever(
+        self.retriever = self.db.as_retriever(
             search_type="similarity_score_threshold",
             search_kwargs={
                 "k": 3,
@@ -48,6 +48,15 @@ class ChatPDF:
             | self.prompt
             | self.model
             | StrOutputParser()
+        )
+
+    def learn(self, pdf_file_path: str):
+        docs = PyPDFLoader(file_path=pdf_file_path).load()
+        chunks = self.text_splitter.split_documents(docs)
+        chunks = filter_complex_metadata(chunks)
+        self.db.add_documents(
+            documents=chunks,
+            embeddings=FastEmbedEmbeddings(),
         )
 
     def ask(self, query: str):

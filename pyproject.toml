@@ -11,8 +11,7 @@ dependencies = [
     "langchain-community>=0.3.16",
     "langchain-ollama>=0.2.3",
     "pypdf>=5.2.0",
-    "streamlit>=1.41.1",
-    "streamlit-chat>=0.1.1",
+    "reportlab>=4.2.5",
 ]
 
 [build-system]
@@ -24,5 +23,6 @@ packages = ["src/ollama_rag"]
 
 [dependency-groups]
 dev = [
+    "pytest>=8.3.4",
     "ruff>=0.9.4",
 ]
