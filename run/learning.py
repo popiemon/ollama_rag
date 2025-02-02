@@ -12,7 +12,6 @@ def main():
         if filename.endswith(".pdf"):
             try:
                 chatpdf.learn(os.path.join(pdf_dir, filename))
-                # chatpdf.ingest(os.path.join(pdf_dir, filename))
             except Exception as e:
                 print(f"Error processing {filename}: {e}")
                 print("Continuing to the next document...")
