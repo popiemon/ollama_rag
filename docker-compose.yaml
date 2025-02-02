@@ -8,6 +8,6 @@ services:
       - ./:/workspace
     working_dir: /workspace
     environment:
-      - OLLAMA_SERVER=http://host.docker.internal:11434
+      - LOCALHOST_OLLAMA=http://host.docker.internal:11434
     extra_hosts:
       - "host.docker.internal:host-gateway"
