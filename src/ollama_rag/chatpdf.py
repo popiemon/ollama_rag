@@ -1,3 +1,4 @@
+import chromadb
 from langchain.prompts import PromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough
@@ -27,16 +28,14 @@ class ChatPDF:
             """
         )
 
-    def ingest(self, pdf_file_path: str):
-        docs = PyPDFLoader(file_path=pdf_file_path).load()
-        chunks = self.text_splitter.split_documents(docs)
-        chunks = filter_complex_metadata(chunks)
-        self.vector_store = Chroma.from_documents(
-            documents=chunks,
-            embedding=FastEmbedEmbeddings(),
-            persist_directory="/workspace/db",
+        persist_directory = "/workspace/db"
+        client = chromadb.PersistentClient(path=persist_directory)
+        self.db = Chroma(
+            collection_name="pdfs",
+            embedding_function=FastEmbedEmbeddings(),
+            client=client,
         )
-        self.retriever = self.vector_store.as_retriever(
+        self.retriever = self.db.as_retriever(
             search_type="similarity_score_threshold",
             search_kwargs={
                 "k": 3,
@@ -48,6 +47,15 @@ class ChatPDF:
             | self.prompt
             | self.model
             | StrOutputParser()
+        )
+
+    def learn(self, pdf_file_path: str):
+        docs = PyPDFLoader(file_path=pdf_file_path).load()
+        chunks = self.text_splitter.split_documents(docs)
+        chunks = filter_complex_metadata(chunks)
+        self.db.add_documents(
+            documents=chunks,
+            embeddings=FastEmbedEmbeddings(),
         )
 
     def ask(self, query: str):
