@@ -5,10 +5,12 @@ from omegaconf import DictConfig
 from tqdm import tqdm
 
 from ollama_rag.chatpdf import ChatPDF
+from ollama_rag.conf import Configuration
 
 
 @hydra.main(version_base=None, config_path="conf", config_name="config")
-def main(cfg: DictConfig):
+def main(cfg_yaml: DictConfig):
+    cfg = Configuration.model_validate(cfg_yaml)
     localhost_ollama = os.getenv(
         "LOCALHOST_OLLAMA", "http://host.docker.internal:11434"
     )
