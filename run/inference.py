@@ -9,6 +9,7 @@ def main():
         if query == "exit":
             break
         print(chatpdf.ask(query))
+        print()
 
 
 if __name__ == "__main__":
