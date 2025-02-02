@@ -2,20 +2,18 @@ from langchain.prompts import PromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from langchain.schema.runnable import RunnablePassthrough
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores.utils import filter_complex_metadata
-from langchain_community.chat_models import ChatOllama
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores.utils import filter_complex_metadata
+from langchain_ollama import ChatOllama
 
 
 class ChatPDF:
-    vector_store = None
-    retriever = None
-    chain = None
-
     def __init__(self):
-        self.model = ChatOllama(model="phi4")
+        self.model = ChatOllama(
+            model="phi4", base_url="http://host.docker.internal:11434"
+        )
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1024, chunk_overlap=100
         )
@@ -33,10 +31,12 @@ class ChatPDF:
         docs = PyPDFLoader(file_path=pdf_file_path).load()
         chunks = self.text_splitter.split_documents(docs)
         chunks = filter_complex_metadata(chunks)
-        vector_store = Chroma.from_documents(
-            documents=chunks, embedding=FastEmbedEmbeddings()
+        self.vector_store = Chroma.from_documents(
+            documents=chunks,
+            embedding=FastEmbedEmbeddings(),
+            persist_directory="/workspace/db",
         )
-        self.retriever = vector_store.as_retriever(
+        self.retriever = self.vector_store.as_retriever(
             search_type="similarity_score_threshold",
             search_kwargs={
                 "k": 3,
