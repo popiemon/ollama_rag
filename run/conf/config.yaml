@@ -1,0 +1,5 @@
+model: phi4
+ollama_baseurl:
+pdf_dir: /workspace/data/GaN
+persist_directory: /workspace/db
+

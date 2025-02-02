@@ -18,7 +18,7 @@ def sample_pdf():
 @pytest.fixture
 def chat_pdf(tmp_path):
     return ChatPDF(
-        model="phi4",
+        model="phi3.5",
         base_url="http://host.docker.internal:11434",
         persist_directory=str(tmp_path / "test_db"),
     )
