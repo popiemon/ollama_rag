@@ -11,7 +11,20 @@ from langchain_ollama import ChatOllama
 
 
 class ChatPDF:
+    """PDF Chatbot that uses a PDF document to answer questions."""
+
     def __init__(self, model: str, base_url: str, persist_directory: str) -> None:
+        """PDF Chatbot that uses a PDF document to answer questions.
+
+        Parameters
+        ----------
+        model : str
+            model name
+        base_url : str
+            ollama base url
+        persist_directory : str
+            directory to persist the PDF documents
+        """
         self.model = ChatOllama(
             model=model,
             base_url=base_url,
@@ -50,7 +63,14 @@ class ChatPDF:
             | StrOutputParser()
         )
 
-    def learn(self, pdf_file_path: str):
+    def learn(self, pdf_file_path: str) -> None:
+        """Learn from a PDF document.
+
+        Parameters
+        ----------
+        pdf_file_path : str
+            path to the PDF file
+        """
         docs = PyPDFLoader(file_path=pdf_file_path).load()
         chunks = self.text_splitter.split_documents(docs)
         chunks = filter_complex_metadata(chunks)
@@ -59,12 +79,25 @@ class ChatPDF:
             embeddings=FastEmbedEmbeddings(),
         )
 
-    def ask(self, query: str):
+    def ask(self, query: str) -> str:
+        """Ask a question.
+
+        Parameters
+        ----------
+        query : str
+            question
+
+        Returns
+        -------
+        str
+            answer
+        """
         if not self.chain:
             return "Please, add a PDF document first."
         return self.chain.invoke(query)
 
-    def clear(self):
+    def clear(self) -> None:
+        """Clear the PDF Chatbot."""
         self.vector_store = None
         self.retriever = None
         self.chain = None
