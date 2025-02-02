@@ -27,7 +27,14 @@
 ## 使用方法
 
 1. PDFファイルをdataディレクトリに配置します。
-2. アプリケーションを起動し、指定のエンドポイントにアクセスしてPDFをRAGします。
+2. 学習します。
+    ```bash
+    python3 run/learning.py
+    ```
+3. 推論します。
+    ```bash
+    python3 run/inference.py
+    ```
 
 ## ライセンス
 
