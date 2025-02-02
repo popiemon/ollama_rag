@@ -6,7 +6,10 @@ from ollama_rag.chatpdf import ChatPDF
 
 
 def main():
-    chatpdf = ChatPDF()
+    localhost_ollama = os.getenv(
+        "LOCALHOST_OLLAMA", "http://host.docker.internal:11434"
+    )
+    chatpdf = ChatPDF("phi4", localhost_ollama, "/workspace/db")
     pdf_dir = "/workspace/data/GaN"
     for filename in tqdm(os.listdir(pdf_dir)):
         if filename.endswith(".pdf"):

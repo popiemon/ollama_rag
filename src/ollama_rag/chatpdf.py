@@ -11,9 +11,10 @@ from langchain_ollama import ChatOllama
 
 
 class ChatPDF:
-    def __init__(self):
+    def __init__(self, model: str, base_url: str, persist_directory: str) -> None:
         self.model = ChatOllama(
-            model="phi4", base_url="http://host.docker.internal:11434"
+            model=model,
+            base_url=base_url,
         )
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1024, chunk_overlap=100
@@ -28,7 +29,7 @@ class ChatPDF:
             """
         )
 
-        persist_directory = "/workspace/db"
+        persist_directory = persist_directory
         client = chromadb.PersistentClient(path=persist_directory)
         self.db = Chroma(
             collection_name="pdfs",
