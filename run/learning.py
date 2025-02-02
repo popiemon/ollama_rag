@@ -1,16 +1,21 @@
 import os
 
+import hydra
+from omegaconf import DictConfig
 from tqdm import tqdm
 
 from ollama_rag.chatpdf import ChatPDF
 
 
-def main():
+@hydra.main(version_base=None, config_path="conf", config_name="config")
+def main(cfg: DictConfig):
     localhost_ollama = os.getenv(
         "LOCALHOST_OLLAMA", "http://host.docker.internal:11434"
     )
-    chatpdf = ChatPDF("phi4", localhost_ollama, "/workspace/db")
-    pdf_dir = "/workspace/data/GaN"
+    if cfg.ollama_baseurl:
+        localhost_ollama = cfg.ollama_baseurl
+    chatpdf = ChatPDF(cfg.model, localhost_ollama, cfg.persist_directory)
+    pdf_dir = cfg.pdf_dir
     for filename in tqdm(os.listdir(pdf_dir)):
         if filename.endswith(".pdf"):
             try:
