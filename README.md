@@ -24,6 +24,11 @@
     uv sync --all-extras
     ```
 
+4. Ollamaのbase urlとモデルを設定します。
+    run/conf/config.yamlの、ollama_baseurlにbase urlを、modelにollamaサーバにデプロイしたモデル名を設定します。
+
+    テストは、localhostのサーバにphi3.5がデプロイされていることが前提となっています。
+
 ## 使用方法
 
 1. PDFファイルをdataディレクトリに配置します。
