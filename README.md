@@ -16,27 +16,31 @@
     cd <リポジトリディレクトリ>
     ```
 
-2. VScodeで、コンテナを再度開く、を選択します。
+2. VScodeで、拡張機能のDev Containersをインストールし、コンテナを再度開く、を選択します。
 
-3. uvで環境を構築します。
+3. Ollamaのbase urlとモデルを設定します。
+    `run/conf/config.yaml`の、ollama_baseurlにbase urlを、modelにollamaサーバにデプロイしたモデル名を設定します。
 
-    ```bash
-    uv sync --all-extras
-    ```
-
-4. Ollamaのbase urlとモデルを設定します。
-    run/conf/config.yamlの、ollama_baseurlにbase urlを、modelにollamaサーバにデプロイしたモデル名を設定します。
+    base_urlが空白の場合、localhost:11434が適用されます。
 
     テストは、localhostのサーバにphi3.5がデプロイされていることが前提となっています。
 
+4. `run/conf/config.yaml`のpdf_dir, persist_directoryを設定する。
+    ```yaml
+    pdf_dir : pdfファイルのフォルダ。
+    persist_directory : dbのフォルダ。
+    ```
+
+5. PDFファイルをpdf_dirディレクトリに配置します。
+
+
 ## 使用方法
 
-1. PDFファイルをdataディレクトリに配置します。
-2. 学習します。
+1. 学習します。
     ```bash
     python3 run/learning.py
     ```
-3. 推論します。
+2. 推論します。
     ```bash
     python3 run/inference.py
     ```
