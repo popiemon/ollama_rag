@@ -19,7 +19,7 @@ def sample_pdf():
 def chat_pdf(tmp_path):
     return ChatPDF(
         model="phi3.5",
-        base_url="http://host.docker.internal:11434",
+        base_url="http://ollama_server:11434",
         persist_directory=str(tmp_path / "test_db"),
     )
 
