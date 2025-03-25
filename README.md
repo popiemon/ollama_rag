@@ -21,9 +21,9 @@
 3. Ollamaのbase urlとモデルを設定します。
     `run/conf/config.yaml`の、ollama_baseurlにbase urlを、modelにollamaサーバにデプロイしたモデル名を設定します。
 
-    base_urlが空白の場合、localhost:11434が適用されます。
+    base_urlが空白の場合、ollama_server:11434が適用されます。
 
-    テストは、localhostのサーバにphi3.5がデプロイされていることが前提となっています。
+    テストは、ollama_serverにphi3.5がデプロイされていることが前提となっています。
 
 4. `run/conf/config.yaml`のpdf_dir, persist_directoryを設定する。
     ```yaml
@@ -32,6 +32,18 @@
     ```
 
 5. PDFファイルをpdf_dirディレクトリに配置します。
+
+
+### ollamaサーバー
+1. コンテナにアタッチ
+```sh
+docker exec -it ollama_server bash
+```
+
+2. モデルをpull
+```sh
+ollama pull <model_name>
+```
 
 
 ## 使用方法
