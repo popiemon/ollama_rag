@@ -177,3 +177,5 @@ cython_debug/
 data
 db
 outputs
+ollama/models/blobs
+ollama/models/manifests
