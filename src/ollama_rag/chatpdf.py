@@ -1,19 +1,29 @@
 import chromadb
-from langchain.prompts import PromptTemplate
-from langchain.schema.output_parser import StrOutputParser
-from langchain.schema.runnable import RunnablePassthrough
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_community.embeddings import FastEmbedEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain_community.vectorstores.utils import filter_complex_metadata
-from langchain_ollama import ChatOllama
+
+from ollama_rag.model import OllamaModel
 
 
 class ChatPDF:
     """PDF Chatbot that uses a PDF document to answer questions."""
 
-    def __init__(self, model: str, base_url: str, persist_directory: str) -> None:
+    def __init__(
+        self,
+        ollama_model: str,
+        base_url: str,
+        persist_directory: str,
+        template: str = """
+            <s> [INST] You are an assistant for question-answering tasks. Use the following context to answer the question.
+            If you don't know the answer, simply say you don't know. Use a maximum of three sentences and be concise in your response. [/INST] </s>
+            [INST] Question: {question}
+            Context: {context}
+            Answer: [/INST]
+            """,
+    ) -> None:
         """PDF Chatbot that uses a PDF document to answer questions.
 
         Parameters
@@ -24,24 +34,12 @@ class ChatPDF:
             ollama base url
         persist_directory : str
             directory to persist the PDF documents
+        template : str, optional
+            template for the prompt, by default
         """
-        self.model = ChatOllama(
-            model=model,
-            base_url=base_url,
-        )
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1024, chunk_overlap=100
         )
-        self.prompt = PromptTemplate.from_template(
-            """
-            <s> [INST] You are an assistant for question-answering tasks. Use the following context to answer the question.
-            If you don't know the answer, simply say you don't know. Use a maximum of three sentences and be concise in your response. [/INST] </s>
-            [INST] Question: {question}
-            Context: {context}
-            Answer: [/INST]
-            """
-        )
-
         persist_directory = persist_directory
         client = chromadb.PersistentClient(path=persist_directory)
         self.db = Chroma(
@@ -56,12 +54,18 @@ class ChatPDF:
                 "score_threshold": 0.5,
             },
         )
-        self.chain = (
-            {"context": self.retriever, "question": RunnablePassthrough()}
-            | self.prompt
-            | self.model
-            | StrOutputParser()
+        self.model = OllamaModel(
+            model_name=ollama_model,
+            base_url=base_url,
+            context=self.retriever,
+            prompt_template=template,
         )
+        # self.chain = (
+        #     {"context": self.retriever, "question": RunnablePassthrough()}
+        #     | self.prompt
+        #     | self.ollama_model
+        #     | StrOutputParser()
+        # )
 
     def learn(self, pdf_file_path: str) -> None:
         """Learn from a PDF document.
@@ -92,9 +96,7 @@ class ChatPDF:
         str
             answer
         """
-        if not self.chain:
-            return "Please, add a PDF document first."
-        return self.chain.invoke(query)
+        return self.model.forward(query)
 
     def clear(self) -> None:
         """Clear the PDF Chatbot."""
