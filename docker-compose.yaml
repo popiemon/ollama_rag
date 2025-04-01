@@ -7,7 +7,21 @@ services:
     volumes:
       - ./:/workspace
     working_dir: /workspace
+  ollama_server:
+    image: ollama/ollama
+    container_name: ollama_server
+    volumes:
+      - ollama:/root/.ollama
+      - ./ollama/models:/models
     environment:
-      - LOCALHOST_OLLAMA=http://host.docker.internal:11434
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - OLLAMA_MODELS=/models
+    # ports:
+    #   - "11434:11434"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+  
+volumes:
+  ollama:
