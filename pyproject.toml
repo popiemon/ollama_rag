@@ -14,7 +14,6 @@ dependencies = [
     "omegaconf>=2.3.0",
     "pypdf>=5.2.0",
     "reportlab>=4.2.5",
-    "weave>=0.51.39",
 ]
 
 [build-system]
