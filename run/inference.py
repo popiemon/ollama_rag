@@ -8,10 +8,10 @@ from ollama_rag.conf import Configuration
 @hydra.main(version_base=None, config_path="conf", config_name="config")
 def main(cfg_yaml: DictConfig):
     cfg = Configuration.model_validate(cfg_yaml)
-    localhost_ollama = "http://ollama_server:11434"
+    ollama_server = "http://ollama_server:11434"
     if cfg.ollama_baseurl:
-        localhost_ollama = cfg.ollama_baseurl
-    chatpdf = ChatPDF(cfg.model, localhost_ollama, cfg.persist_directory)
+        ollama_server = cfg.ollama_baseurl
+    chatpdf = ChatPDF(cfg.model, ollama_server, cfg.persist_directory)
 
     while True:
         query = input("Ask a question: ")
